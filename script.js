@@ -116,4 +116,40 @@ function submitQuiz() {
             document.getElementById('myModal').style.display = 'block';
         }
 
+if (process.env.NODE_ENV !== 'production') {
+    // Load environment variables from the .env file in development mode
+    require('dotenv').config();
+}
+
+const API_KEY = process.env.API_KEY;
+
+async function queryGPT3(prompt) {
+    const data = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7
+    };
+
+    try {
+        const response = await axios.post('https://api.openai.com/v1/chat/completions', data, {
+        headers: {
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        });
+
+        return response.data.choices[0].message.content;
+    } catch (error) {
+        console.error('An error occurred:', error);
+        // Handle the error appropriately
+        // You can inspect the error object for more details
+        throw error; // Re-throw the error or handle it gracefully
+    }
+}
+
+
+queryGPT3('Translate the following English text to French: "what a wonderful day!"')
+    .then(response => console.log(response))
+    .catch(error => console.error(error));
+
 loadQuiz();
