@@ -149,8 +149,8 @@ async function queryGPT3(prompt) {
     }
 }
 
-
-queryGPT3('Translate the following English text to French: "what a wonderful day!"')
+prompt_str = `Give feedback on the wrong answers based on the following data ${reference_data}`
+queryGPT3(prompt_str)
     .then(response => console.log(response))
     .catch(error => console.error(error));
 
