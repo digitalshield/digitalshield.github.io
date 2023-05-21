@@ -131,12 +131,14 @@ async function queryGPT3(prompt) {
     };
 
     try {
-        const response = await axios.post('https://api.openai.com/v1/chat/completions', data, {
-        headers: {
-            'Authorization': `Bearer ${API_KEY}`,
-            'Content-Type': 'application/json',
-        },
-        });
+            const response = await axios.post('https://api.openai.com/v1/chat/completions',
+            data,
+            {
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
         return response.data.choices[0].message.content;
     } catch (error) {

@@ -32,6 +32,8 @@ jobs:
         run: npm install
       - name: Build project
         run: npm run build
+      - name: Set environment variable
+        run: echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Build with Jekyll
@@ -54,5 +56,5 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          token: ${{ secrets.GITHUB_TOKEN }}
+
