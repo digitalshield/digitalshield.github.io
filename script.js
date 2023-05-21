@@ -92,29 +92,60 @@ primary signs and symptoms include, shivering, loss of muscle coordination, conf
 disorientation.`;
 
 function loadQuiz() {
-            let quizDiv = document.getElementById('quiz');
-            all_questions.forEach((q, i) => {
-                let questionDiv = document.createElement('div');
-                questionDiv.innerHTML = `<h2>${q.question}</h2>`;
-                q.options.forEach((option, j) => {
-                    questionDiv.innerHTML += `<input type="radio" name="question${i}" value="${option}">${option}<br>`;
-                });
-                quizDiv.appendChild(questionDiv);
-            });
-        }
+    let quizDiv = document.getElementById('quiz');
+    all_questions.forEach((q, i) => {
+        let questionDiv = document.createElement('div');
+        questionDiv.innerHTML = `<h2>${q.question}</h2>`;
+        q.options.forEach((option, j) => {
+            questionDiv.innerHTML += `<input type="radio" name="question${i}" value="${option}">${option}<br>`;
+        });
+        quizDiv.appendChild(questionDiv);
+    });
+}
 
-function submitQuiz() {
-            let score = 0;
-            all_questions.forEach((q, i) => {
-                let selected = document.querySelector(`input[name="question${i}"]:checked`).value;
-                if (selected === q.correct_answer) {
-                    score++;
-                }
-            });
-            document.getElementById('result').innerText = `Your score: ${score}/${all_questions.length}`;
-            document.getElementById('feedback').innerText = 'Thank you for taking the quiz!';
-            document.getElementById('myModal').style.display = 'block';
+export function submitQuiz() {
+    let score = 0;
+    let incorrectResponses = []; // Array to store incorrect responses
+    all_questions.forEach((q, i) => {
+        let selected = document.querySelector(`input[name="question${i}"]:checked`).value;
+        if (selected === q.correct_answer) {
+            score++;
+        } else {
+            incorrectResponses.push({ question: q.question, selected });
         }
+    });
+
+    document.getElementById('result').innerText = `Your score: ${score}/${all_questions.length}`;
+
+    let prompt_str = '';
+
+    if (incorrectResponses.length > 0) {
+        incorrectResponses.forEach((response) => {
+            prompt_str += `- Question: ${response.question} ` + `Your answer: ${response.selected}`;
+        });
+    }
+
+    prompt_str += `\n Give feedback on the wrong answers based on the following data ${reference_data}`;
+
+    // Show loading spinner
+    document.getElementById('loading').style.display = 'block';
+
+    document.getElementById('feedback').innerHTML = "";
+
+    queryGPT3(prompt_str)
+        .then(response => {
+            document.getElementById('feedback').innerText = response;
+            // Hide loading spinner after receiving the response
+            document.getElementById('loading').style.display = 'none';
+        })
+        .catch(error => {
+            console.error(error);
+            // Hide loading spinner on error
+            document.getElementById('loading').style.display = 'none';
+        });
+
+    document.getElementById('myModal').style.display = 'block';
+}
 
 if (process.env.NODE_ENV !== 'production') {
     // Load environment variables from the .env file in development mode
@@ -148,10 +179,5 @@ async function queryGPT3(prompt) {
         throw error; // Re-throw the error or handle it gracefully
     }
 }
-
-prompt_str = `Give feedback on the wrong answers based on the following data ${reference_data}`
-queryGPT3(prompt_str)
-    .then(response => console.log(response))
-    .catch(error => console.error(error));
 
 loadQuiz();

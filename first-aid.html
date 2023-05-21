@@ -26,6 +26,10 @@
             border: 1px solid #888;
             width: 80%;
         }
+        .loading-spinner {
+            display: none; /* Initially hidden */
+            /* Add your loading animation styles here */
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -38,6 +42,7 @@
             <span class="close">&times;</span>
             <p id="result"></p>
             <p id="feedback"></p>
+            <div id="loading" class="loading-spinner"></div>
         </div>
     </div>
 

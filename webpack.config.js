@@ -12,7 +12,22 @@ module.exports = {
 
   mode: 'production',
 
+  module: {
+    rules: [
+      {
+        test: require.resolve('./script.js'), // Replace './script.js' with the path to the file that exports your function
+        loader: 'expose-loader',
+        options: {
+          exposes: {
+            globalName: 'submitQuiz',
+            moduleLocalName: 'submitQuiz'
+          }
+        },
+      },
+    ],
+  },
+
   plugins: [
-    new Dotenv()
-  ]
+    new Dotenv(),
+  ],
 };
